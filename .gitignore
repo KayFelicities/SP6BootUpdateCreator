@@ -1,0 +1,9 @@
+u-boot-spl.bin
+u-boot.bin
+uImage
+update.ini
+update.sp6
+*.pyc
+cramfs.img
+/dist
+/build
