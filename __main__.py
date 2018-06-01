@@ -9,15 +9,11 @@ import time
 import hashcalc
 
 VERSION = 'V0.1'
-DATE = '20180419'
+DATE = '20180601'
 
-
-if getattr(sys, 'frozen', False):
-    SORTWARE_PATH = sys._MEIPASS
-else:
-    SORTWARE_PATH = os.path.join(os.path.split(os.path.realpath(__file__))[0])
-
-CONFIG_FILE = r'./update.ini'
+WORKING_PATH = os.path.split(os.path.abspath(sys.argv[0]))[0]
+SORTWARE_PATH = sys._MEIPASS if getattr(sys, 'frozen', False) else WORKING_PATH
+CONFIG_FILE = os.path.join(WORKING_PATH, r'update.ini')
 CONFIG_FILE_CONTENT_DEFAULT = r'''[outfile]
 path = update.sp6
 
@@ -42,7 +38,18 @@ type = 0
 path = uImage
 
 # 烧写目标地址(支持单位K/M/G)
-dest_addr = 0 
+dest_addr = 1M
+
+# 以下是需要打包的文件，数量不限，可自行增加
+[file2]
+# 0:内核  1:根文件系统  2:boot  3:环境变量  4:命令文件  5:其他文件
+type = 1
+
+# 文件名(支持路径)
+path = cramfs.img
+
+# 烧写目标地址(支持单位K/M/G)
+dest_addr = 3M
 
 '''
 
@@ -134,20 +141,24 @@ def get_head():
 
 def main():
     """main"""
-    CONFIG.chk_config()
-    out_merge_file_path = os.path.join(CONFIG.outfile_cfg().get('path'))
-    print('mount: ', 'yes' if CONFIG.update_cfg().getboolean('is_mount') else 'no')
-    print('zip: ', 'yes' if CONFIG.update_cfg().getboolean('is_zip') else 'no')
-    print('reboot: ', 'yes' if CONFIG.update_cfg().getboolean('is_reboot') else 'no')
-    print('\ninfile num: ', CONFIG.infile_num)
-    with open(out_merge_file_path, 'wb') as outfile:
-        outfile.write(get_head())
-        for cnt in range(CONFIG.infile_num):
-            infile_path = os.path.join(CONFIG.infile_cfg(cnt + 1).get('path'))
-            infile = open(infile_path, 'rb')
-            outfile.write(infile.read())
-            infile.close()
-    print('\nsuccess, outfile:', out_merge_file_path)
+    try:
+        CONFIG.chk_config()
+        out_merge_file_path = os.path.join(CONFIG.outfile_cfg().get('path'))
+        print('mount: ', 'yes' if CONFIG.update_cfg().getboolean('is_mount') else 'no')
+        print('zip: ', 'yes' if CONFIG.update_cfg().getboolean('is_zip') else 'no')
+        print('reboot: ', 'yes' if CONFIG.update_cfg().getboolean('is_reboot') else 'no')
+        print('\ninfile num: ', CONFIG.infile_num)
+        with open(out_merge_file_path, 'wb') as outfile:
+            outfile.write(get_head())
+            for cnt in range(CONFIG.infile_num):
+                infile_path = os.path.join(CONFIG.infile_cfg(cnt + 1).get('path'))
+                infile = open(infile_path, 'rb')
+                outfile.write(infile.read())
+                infile.close()
+        return 0
+    except Exception:
+        traceback.print_exc()
+        return -1
 
 
 def del_outfile():
@@ -157,17 +168,29 @@ def del_outfile():
         if os.path.isfile(out_merge_file_path):
             os.remove(out_merge_file_path)
     except Exception:
+        traceback.print_exc()
         print('outfile del failed.')
 
 if __name__ == '__main__':
+    if len(sys.argv) > 1:
+        WORKING_PATH = sys.argv[1]
+        if not os.path.isdir(WORKING_PATH):
+            print('ERROR: working path invalid.')
+            sys.exit(1)
+
     tm_start = time.time()
     print('SP6 Update Files Merge {ver}({date}).Designed by Kay.'.format(ver=VERSION, date=DATE))
-    try:
-        main()
-    except Exception:
-        traceback.print_exc()
+    print('WORKING_PATH:', WORKING_PATH)
+    print('CONFIG_FILE:', CONFIG_FILE)
+    os.chdir(WORKING_PATH)
+    if main() == 0:
+        print('success')
+    else:
         print('!!FAILED!!')
+        os.system('color 47')
         del_outfile()
-    finally:
-        print('time use {tm:.1f}s'.format(tm=time.time() - tm_start))
-        os.system('pause')
+        time.sleep(3)
+        os.system('color 07')
+        sys.exit(1)
+    print('time use {tm:.1f}s'.format(tm=time.time() - tm_start))
+    sys.exit(0)
