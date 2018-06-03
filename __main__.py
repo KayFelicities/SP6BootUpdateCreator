@@ -13,7 +13,7 @@ DATE = '20180601'
 
 WORKING_PATH = os.path.split(os.path.abspath(sys.argv[0]))[0]
 SORTWARE_PATH = sys._MEIPASS if getattr(sys, 'frozen', False) else WORKING_PATH
-CONFIG_FILE = os.path.join(WORKING_PATH, r'update.ini')
+CONFIG_FILE = os.path.join(WORKING_PATH, r'bootupdate.ini')
 CONFIG_FILE_CONTENT_DEFAULT = r'''[outfile]
 path = update.sp6
 

@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['__main__.py'],
-             pathex=['C:\\Users\\wangke\\Desktop\\VirtualBox\\python\\SP6UpdateFilesMerge'],
+             pathex=['C:\\Users\\wangke\\Desktop\\VirtualBox\\python\\SP6BootUpdateCreator'],
              binaries=[],
              datas=[],
              hiddenimports=[],
@@ -21,7 +21,7 @@ exe = EXE(pyz,
           a.binaries,
           a.zipfiles,
           a.datas,
-          name='SP6UpdateFilesMerge',
+          name='SP6BootUpdateCreator',
           debug=False,
           strip=False,
           upx=True,
