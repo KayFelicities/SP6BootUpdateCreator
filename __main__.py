@@ -179,7 +179,7 @@ if __name__ == '__main__':
             sys.exit(1)
 
     tm_start = time.time()
-    print('SP6 Update Files Merge {ver}({date}).Designed by Kay.'.format(ver=VERSION, date=DATE))
+    print('SP6 Boot Update Creator {ver}({date}).Designed by Kay.'.format(ver=VERSION, date=DATE))
     print('WORKING_PATH:', WORKING_PATH)
     print('CONFIG_FILE:', CONFIG_FILE)
     os.chdir(WORKING_PATH)
