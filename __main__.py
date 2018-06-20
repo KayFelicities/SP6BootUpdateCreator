@@ -9,8 +9,8 @@ import traceback
 import time
 import hashcalc
 
-VERSION = 'V0.1'
-DATE = '20180601'
+VERSION = 'V0.2'
+DATE = '20180620'
 
 WORKING_PATH = None
 SOFTWARE_PATH = os.path.join(os.path.split(os.path.abspath(sys.argv[0]))[0])
@@ -41,7 +41,7 @@ type = 0
 path = uImage
 
 # 烧写目标地址(支持单位K/M/G)
-dest_addr = 1M
+dest_addr = 768K
 
 # 以下是需要打包的文件，数量不限，可自行增加
 [file2]
